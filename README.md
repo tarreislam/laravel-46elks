@@ -1,14 +1,14 @@
 ![php 46elks logo](https://i.imgur.com/32yAGi9.png)
 
 # Laravel-46Elks
-#### Laravel notification driver (SMS) for [46elks.se](46elks.se)
+### Laravel SMS notification driver for [php-46elks](https://github.com/tarreislam/php-46elks)
 
-### Installation
+## Installation
 
 **Install with composer**
 
 ```
-compose require tarre/laravel-46elks
+composer require tarre/laravel-46elks
 ```
 
 
@@ -31,14 +31,11 @@ Add this to your `.env` file
 46ELKS_WHEN_DELIVERED=false
 ```
 
-### Example usage
+## Example usage
 
 **User model**
 ```php
-
-use Illuminate\Notifications\Notifiable;
-
-class User
+class User Extends Model
 {
     use Notifiable;
 
@@ -88,10 +85,12 @@ class TestNotification extends Notification
 }
 ````
 
-### Available `SmsMessage` methods
+## Available `SmsMessage` methods
 
-* `__construct(array $lines)` alternative to `->line('')` 
-* `from($senderId)` overrides the .env file
+
+* `__construct(array $lines)` Alternative to `->line('')` 
+* `->line($line)` Add text message line
+* `from($senderId)` Overrides the .env file
 * `cc($e164Number)` Add more e164 recipients
-* `whenDelivered($url)` overrides the .env file
+* `whenDelivered($url)` Overrides the .env file
 * `flash($state = true)` Flash SMS are shown immediately on the receivers phone and do not disappear until the receiver has confirmed the message. This feature is perfect for messages that really have to be read by the receiver.
