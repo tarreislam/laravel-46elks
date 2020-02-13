@@ -17,6 +17,11 @@
         }
     ],
     "minimum-stability": "stable",
+    "autoload": {
+        "psr-4": {
+            "Tarre\\Laravel46Elks\\": "src/"
+        }
+    },
     "extra": {
         "laravel": {
             "providers": [
