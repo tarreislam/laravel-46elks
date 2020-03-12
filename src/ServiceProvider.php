@@ -13,7 +13,6 @@ use Tarre\Php46Elks\Client;
 class ServiceProvider extends BaseServiceProvider
 {
 
-
     public function boot()
     {
         /*
@@ -26,37 +25,54 @@ class ServiceProvider extends BaseServiceProvider
 
     public function register()
     {
+
+        /*
+        * Create PHP46Elks\Client
+        */
+        $this->app->singleton('PHP46Elks\Client', function () {
+            // load settings
+            $username = config('laravel-46elks.username');
+            $password = config('laravel-46elks.password');
+            // create client
+            return new Client($username, $password);
+        });
+
+        /*
+         * Create PHP46Elks\SmsDispatcher service
+         */
+        $this->app->singleton('PHP46Elks\SmsDispatcher', function ($app) {
+            // Load SMS settings
+            $from = config('laravel-46elks.from');
+            $dryRun = config('laravel-46elks.dry_run');
+            $whenDelivered = config('laravel-46elks.when_delivered');
+
+            // get client
+            $client = $app->make('PHP46Elks\Client');
+
+            // create service
+            $sms = $client->sms()->from($from);
+
+            // set global settings for each message request
+            if ($dryRun) {
+                $sms = $sms->dryRun();
+            }
+
+            // post webhook
+            if ($whenDelivered) {
+                $sms = $sms->whenDelivered($whenDelivered);
+            }
+
+            // return dispatcher instance
+            return $sms->dispatcher();
+        });
+
         /*
          * add "46elks" to Laravel's notification channel drivers
          */
         Notification::resolved(function (ChannelManager $service) {
             $service->extend('46elks', function ($app) {
-                // load settings
-                $username = config('laravel-46elks.username');
-                $password = config('laravel-46elks.password');
-                $from = config('laravel-46elks.from');
-                $dryRun = config('laravel-46elks.dry_run');
-                $whenDelivered = config('laravel-46elks.when_delivered');
-
-                // create client
-                $client = new Client($username, $password);
-
-                // create service
-                $sms = $client->sms()->from($from);
-
-                // set global settings for each message request
-                if ($dryRun) {
-                    $sms = $sms->dryRun();
-                }
-
-                // post webhook
-                if ($whenDelivered) {
-                    $sms = $sms->whenDelivered($whenDelivered);
-                }
-
-                // return dispatcher instance
-                $dispatcher = $sms->dispatcher();
-
+                // get configured SMS dispatcher
+                $dispatcher = $app->make('PHP46Elks\SmsDispatcher');
                 // return channel
                 return new SmsChannel($dispatcher);
             });
@@ -64,10 +80,5 @@ class ServiceProvider extends BaseServiceProvider
 
     }
 
-
-    protected function getBaseClient()
-    {
-
-    }
 
 }

@@ -1,20 +1,22 @@
-![php 46elks logo](https://i.imgur.com/32yAGi9.png)
 
-# Laravel-46Elks
-### Laravel SMS notification driver for [php-46elks](https://github.com/tarreislam/php-46elks)
+<p align="center"><img src="https://i.imgur.com/32yAGi9.png"></p>
 
-## Installation
+## About Laravel-46Elks
 
-**Install with composer**
+Laravel-46Elks is a SMS notification driver for [Laravel Notifications](https://laravel.com/docs/6.x/notifications), written to streamline the interaction between 46elks API and your Laravel application.
+For generic PHP usage, please check out [php-46elks](https://github.com/tarreislam/php-46elks) instead.
+
+### Installation
+
+Install with composer
 
 ```
 composer require tarre/laravel-46elks
 ```
 
+Add Service provider _(only needed if your Laravel app does not support auto-discover)_
 
-**Add Service provider**
-
-Add `Tarre\Laravel46Elks\ServiceProvider::class` `config/app.php` if your Laravel app does not support auto-discover
+Add `Tarre\Laravel46Elks\ServiceProvider::class` `config/app.php`
 
 **Publish config**
 
@@ -24,14 +26,14 @@ Add `Tarre\Laravel46Elks\ServiceProvider::class` `config/app.php` if your Larave
 
 Add this to your `.env` file
 ```dotenv
-46ELKS_FROM=MyApp
-46ELKS_USERNAME=xxx
-46ELKS_PASSWORD=yyy
-46ELKS_DRY_RUN=false
-46ELKS_WHEN_DELIVERED=false
+e46ELKS_FROM=MyApp
+e46ELKS_USERNAME=xxx
+e46ELKS_PASSWORD=yyy
+e46ELKS_DRY_RUN=false
+e46ELKS_WHEN_DELIVERED=false
 ```
 
-## Example usage
+### Example usage
 
 **User model**
 ```php
@@ -85,7 +87,7 @@ class TestNotification extends Notification
 }
 ````
 
-## Available `SmsMessage` methods
+### Available `SmsMessage` methods
 
 
 * `__construct(array $lines)` Alternative to `->line('')` 
@@ -94,3 +96,18 @@ class TestNotification extends Notification
 * `cc($e164Number)` Add more e164 recipients
 * `whenDelivered($url)` Overrides the .env file
 * `flash($state = true)` Flash SMS are shown immediately on the receivers phone and do not disappear until the receiver has confirmed the message. This feature is perfect for messages that really have to be read by the receiver.
+
+
+### Access 46elks instance elsewhere in your Laravel app
+
+If you want to use the same 46elk instance for something else in your app. You can access the client like so:
+
+```PHP
+$client = app('PHP46Elks\Client');
+```
+
+Or the SMS service, which has the other `.env` settings as default
+
+```php
+$SMSDispatcher = app('PHP46Elks\SmsDispatcher');
+```
