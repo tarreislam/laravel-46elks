@@ -1,5 +1,9 @@
-
 <p align="center"><img src="https://i.imgur.com/32yAGi9.png"></p>
+
+<p align="center">
+<a href="https://packagist.org/packages/tarre/laravel-46elks"><img src="https://img.shields.io/packagist/v/tarre/laravel-46elks?style=flat-square"></a>
+<a href="https://packagist.org/packages/tarre/laravel-46elks"><img src="https://img.shields.io/packagist/l/tarre/laravel-46elks?style=flat-square"></a>
+</p>
 
 ## About Laravel-46Elks
 
@@ -8,15 +12,11 @@ For generic PHP usage, please check out [php-46elks](https://github.com/tarreisl
 
 ### Installation
 
-Install with composer
+**Install with composer**
 
 ```
 composer require tarre/laravel-46elks
 ```
-
-Add Service provider _(only needed if your Laravel app does not support auto-discover)_
-
-Add `Tarre\Laravel46Elks\ServiceProvider::class` `config/app.php`
 
 **Publish config**
 
@@ -89,7 +89,6 @@ class TestNotification extends Notification
 
 ### Available `SmsMessage` methods
 
-
 * `__construct(array $lines)` Alternative to `->line('')` 
 * `->line($line)` Add text message line
 * `from($senderId)` Overrides the .env file
@@ -98,16 +97,8 @@ class TestNotification extends Notification
 * `flash($state = true)` Flash SMS are shown immediately on the receivers phone and do not disappear until the receiver has confirmed the message. This feature is perfect for messages that really have to be read by the receiver.
 
 
-### Access 46elks instance elsewhere in your Laravel app
 
-If you want to use the same 46elk instance for something else in your app. You can access the client like so:
+### More
 
-```PHP
-$client = app('PHP46Elks\Client');
-```
-
-Or the SMS service, which has the other `.env` settings as default
-
-```php
-$SMSDispatcher = app('PHP46Elks\SmsDispatcher');
-```
+* [Accessing the instance elsewhere in your application](docs/accessing-elsewhere.md)
+* [Validate origin on your callbacks](docs/validate-origin-callbacks.md)
