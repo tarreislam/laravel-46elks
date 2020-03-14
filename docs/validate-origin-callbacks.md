@@ -58,7 +58,7 @@ class Kernel extends HttpKernel
 
 }
 ```
-or directly in your controllers
+or directly in your controller
 
 ```php
 <?php
@@ -85,3 +85,10 @@ class C46ElkController extends Controller
     }
 }
 ```
+### Allowing origins
+
+`e46ELKS_IPV4_ORIGINS` and `e46ELKS_IPV6_ORIGINS` is used to store which origins are allowed.
+by default 176.10.154.199, 85.24.146.132, 185.39.146.243 is used for ipv4 and 2001:9b0:2:902::199 for ipv6.
+
+### Good to know
+When testing or working in dev, you probably want to set `e46ELKS_IPV4_ORIGINS` and `e46ELKS_IPV6_ORIGINS` to `false` in your `.env` to disable origin checks in the middleware

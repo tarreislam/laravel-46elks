@@ -29,14 +29,18 @@ class Validate46ElksOrigin
         }
 
         if (!$grantAccess) {
-            abort(Response::HTTP_FORBIDDEN);
+            return abort(Response::HTTP_FORBIDDEN);
         }
 
         return $next($request);
 
     }
 
-
+    /**
+     * @param $ip
+     * @param $source
+     * @return bool
+     */
     protected function allowOrigin($ip, $source)
     {
         $originsToCheck = config("laravel-46elks.{$source}_origins", null);
