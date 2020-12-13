@@ -4,6 +4,7 @@
 namespace Tarre\Laravel46Elks\Channels;
 
 use Illuminate\Notifications\Notification;
+use Tarre\Laravel46Elks\Events\MessageSent;
 use Tarre\Php46Elks\Clients\SMS\Services\SMSDispatcherService;
 
 /**
@@ -68,7 +69,13 @@ class SmsChannel
         }
 
         // send the poor bastard
-        return $dispatcherService->send();
+        try {
+            $res = $dispatcherService->send();
+            event(new MessageSent($message));
+            return $res;
+        } catch (\Exception $exception){
+            throw $exception;
+        }
     }
 
 }
