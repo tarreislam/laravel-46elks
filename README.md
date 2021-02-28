@@ -102,3 +102,4 @@ class TestNotification extends Notification
 
 * [Accessing the instance elsewhere in your application](docs/accessing-elsewhere.md)
 * [Validate origin on your callbacks](docs/validate-origin-callbacks.md)
+* [Validate user input](docs/validate-input.md)

@@ -51,9 +51,13 @@ class SmsChannel
             ->SMSDispatcherService
             ->setLines($message->lines);
 
-        // no iffs ands or butts -Mike Tyson
-        if (count($message->recipients) > 0) {
-            $dispatcherService->setRecipients($message->recipients);
+        // Add recpiients
+        if (count($recipients = $message->recipients) > 0) {
+            // Transform recipients if needed
+            if (config('laravel-46elks.transform_recipients')) {
+                $recipients = $this->transformRecipients($recipients);
+            }
+            $dispatcherService->setRecipients($recipients);
         }
 
         if ($message->flash) {
@@ -68,14 +72,42 @@ class SmsChannel
             $dispatcherService->whenDelivered($message->whenDelivered);
         }
 
-        // send the poor bastard
         try {
             $res = $dispatcherService->send();
             event(new MessageSent($message));
             return $res;
-        } catch (\Exception $exception){
+        } catch (\Exception $exception) {
             throw $exception;
         }
+    }
+
+    protected function transformRecipients(array $recipients)
+    {
+        $cc = config('laravel-46elks.transform_cc');
+
+        $newRecipients = [];
+
+        foreach ($recipients as $recipient) {
+            $newRecipients[] = $this->transformRecipient($recipient, $cc);
+        }
+
+        return $newRecipients;
+    }
+
+    protected function transformRecipient($recipient, $cc)
+    {
+        /*
+         * remove everything besides numbers and +
+         */
+        $recipient = preg_replace('/[^0-9+]+/g', '', $recipient);
+        /*
+         * Check if we need to prepend country code
+         */
+        if (substr($recipient, 0, 1) == '0') {
+            $recipient = preg_replace('/^0(.*)/', $cc . '$1', $recipient);
+        }
+
+        return $recipient;
     }
 
 }
