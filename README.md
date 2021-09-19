@@ -87,6 +87,8 @@ class TestNotification extends Notification
 }
 ````
 
+If you are using `toMail` already, check out [Piggybacking on Notifications toMail method](docs/piggybacking-to-mail.md)
+
 ### Available `SmsMessage` methods
 
 * `__construct(array $lines)` Alternative to `->line('')` 
@@ -100,6 +102,7 @@ class TestNotification extends Notification
 
 ### More
 
+* [Piggybacking on Notifications toMail method](docs/piggybacking-to-mail.md)
 * [Accessing the instance elsewhere in your application](docs/accessing-elsewhere.md)
 * [Validate origin on your callbacks](docs/validate-origin-callbacks.md)
 * [Validate user input](docs/validate-input.md)
