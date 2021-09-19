@@ -17,10 +17,40 @@ class SmsMessage
      * SmsMessage constructor.
      * @param array $lines
      */
-    public function __construct(array $lines = null)
+public function __construct($lines = null)
     {
-        if (!is_null($lines)) {
+        if (is_array($lines)) {
             $this->lines = $lines;
+        } elseif ($lines instanceof MailMessage) {
+            $mm = $lines;
+            /*
+             * Add subject (sms will be to crowded)
+            if(!empty($mm->subject)){
+                $this->line($mm->subject);
+                $this->line('---'); // spacer
+            }
+             */
+
+            /*
+             * Add greeting
+             */
+            if (!empty($mm->greeting)) {
+                $this->line($mm->greeting);
+                $this->line('-'); // spacer
+            }
+            /*
+             * Add intro-lines aka "Lines"
+             */
+            foreach ($mm->introLines as $line) {
+                $this->line($line);
+            }
+            /*
+             * Add action
+             */
+            if (!empty($mm->actionUrl)) {
+                $this->line('');
+                $this->line("{$mm->actionText}: {$mm->actionUrl}");
+            }
         }
     }
 
