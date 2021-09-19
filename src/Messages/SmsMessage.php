@@ -1,8 +1,8 @@
 <?php
 
-
 namespace Tarre\Laravel46Elks\Messages;
 
+use Illuminate\Notifications\Messages\MailMessage;
 
 class SmsMessage
 {
@@ -15,9 +15,9 @@ class SmsMessage
 
     /**
      * SmsMessage constructor.
-     * @param array $lines
+     * @param array|MailMessage $lines
      */
-public function __construct($lines = null)
+    public function __construct($lines = null)
     {
         if (is_array($lines)) {
             $this->lines = $lines;
