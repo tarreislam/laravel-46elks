@@ -32,34 +32,45 @@ class SmsChannel
      */
     public function send($notifiable, Notification $notification)
     {
-
-        if (!$to = $notifiable->routeNotificationFor('46elks', $notification)) {
+        if (!$recipients = $notifiable->routeNotificationFor('46elks', $notification)) {
             return;
         }
-
-        if (is_array($to)) {
-            $this->SMSDispatcherService->setRecipients($to);
-        } else {
-            $this->SMSDispatcherService->recipient($to);
-        }
-
-        // get notification message
+        // get notification message.
         $message = $notification->to46Elks($notifiable);
 
-        // initial setup
+        /*
+         * Convert to recipient to array
+         */
+        if (!is_array($recipients)) {
+            $recipients = [$recipients];
+        }
+        /*
+         * Merge SmsMessage "cc" AKA recipients into "$to"
+         */
+        $recipients = array_merge($recipients, $message->recipients);
+        /*
+         * Transform if needed
+         */
+        if (config('laravel-46elks.transform_recipients')) {
+            $recipients = $this->transformRecipients($recipients);
+        }
+        /*
+         * Cleanup
+         */
+        $recipients = array_values(array_unique($recipients));
+        /*
+         * "set" is mislreading, it should be "add",
+         */
+        $this->SMSDispatcherService->setRecipients($recipients);
+        /*
+         * Setup dispatcher
+         */
         $dispatcherService = $this
             ->SMSDispatcherService
             ->setLines($message->lines);
-
-        // Add recpiients
-        if (count($recipients = $message->recipients) > 0) {
-            // Transform recipients if needed
-            if (config('laravel-46elks.transform_recipients')) {
-                $recipients = $this->transformRecipients($recipients);
-            }
-            $dispatcherService->setRecipients($recipients);
-        }
-
+        /*
+         * Add custom settings
+         */
         if ($message->flash) {
             $dispatcherService->flash();
         }
@@ -71,10 +82,17 @@ class SmsChannel
         if ($message->whenDelivered) {
             $dispatcherService->whenDelivered($message->whenDelivered);
         }
-
+        /*
+         * Send message
+         */
         try {
             $res = $dispatcherService->send();
             event(new MessageSent($message));
+            if (config('laravel-46elks.dry_run')) {
+                \Log::info('--46ELKS DRY RUN START--');
+                \Log::info($res);
+                \Log::info('--46ELKS DRY RUN END--');
+            }
             return $res;
         } catch (\Exception $exception) {
             throw $exception;
@@ -99,7 +117,7 @@ class SmsChannel
         /*
          * remove everything besides numbers and +
          */
-        $recipient = preg_replace('/[^0-9+]+/g', '', $recipient);
+        $recipient = preg_replace('/[^0-9+]+/', '', $recipient);
         /*
          * Check if we need to prepend country code
          */
